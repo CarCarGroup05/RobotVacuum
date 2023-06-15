@@ -97,9 +97,9 @@ class PoseDetector:
 
 def main():
     while True:
-        path = "/home/usr/RobotVacuum/photos"
+        path = "/home/pi/RobotVacuum/photos"
         pictures = os.listdir(path)
-        IMAGE = cv2.imread("/home/usr/RobotVacuum/photos/"+pictures[-1])
+        IMAGE = cv2.imread("/home/pi/RobotVacuum/photos/"+pictures[-1])
         img = IMAGE
         detector = PoseDetector()
         img = detector.faint_detect(img, bboxWithHands=False)
