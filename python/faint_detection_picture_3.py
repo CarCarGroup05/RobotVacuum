@@ -96,17 +96,17 @@ class PoseDetector:
             return 0
 
 def main():
-    path = "C:/Users/88697/mediapipe/picture"
+    path = "/home/usr/RobotVacuum/photos"
     while True:
         pictures = os.listdir(path)
-        IMAGE = cv2.imread("C:/Users/88697/mediapipe/picture/"+pictures[-1])
+        IMAGE = cv2.imread("/home/usr/RobotVacuum/photos/"+pictures[-1])
         img = IMAGE
         detector = PoseDetector()
         img = detector.faint_detect(img, bboxWithHands=False)
         while True:
             cv2.imshow("Image", img)
             time.sleep(5)
-            os.remove("C:/Users/88697/mediapipe/picture/"+pictures[0])
+            os.remove("/home/usr/RobotVacuum/photos/"+pictures[0])
             break
         print(1)    
         if cv2.waitKey(1) == 27:

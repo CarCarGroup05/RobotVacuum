@@ -84,9 +84,9 @@ class PoseDetector:
 
 def main():
     while True:
-        path = "C:/Users/88697/mediapipe/picture"
+        path = "/home/usr/RobotVacuum/photos"
         pictures = os.listdir(path)
-        IMAGE = cv2.imread("C:/Users/88697/mediapipe/picture/"+pictures[-1])
+        IMAGE = cv2.imread("/home/usr/RobotVacuum/photos/"+pictures[-1])
         img = IMAGE
         detector = PoseDetector()
         img = detector.faint_detect(img, bboxWithHands=False)
@@ -95,7 +95,7 @@ def main():
             time.sleep(5)
             break
         print(1)    
-        if cv2.waitKey(5) == 27:
+        if cv2.waitKey(1) == 27:
             break
         
     return 0

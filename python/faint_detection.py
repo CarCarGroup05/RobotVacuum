@@ -81,14 +81,14 @@ class PoseDetector:
             return 0
 
 def main():
-    IMAGE = cv2.imread('test1.jpg')
+    IMAGE = cv2.imread('image1.jpeg')
     cap = IMAGE
     detector = PoseDetector()
     #while True:
     img = cap#.read()
     img = detector.faint_detect(img, bboxWithHands=False)
     cv2.imshow("Image", img)
-    if cv2.waitKey(100) == ord('q'):
+    if cv2.waitKey(1) == 27:
         #cap.release()
         cv2.destroyAllWindows()
     return 0
