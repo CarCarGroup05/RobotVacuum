@@ -1,15 +1,15 @@
 import requests
 import time
-def Warning(self,time):
+def Warning(self,time,picurl):
     headers = {
         "Authorization": "Bearer " + "OWbgpbxq30zMuNAzDoaf9HeSiTP0t3hEodgeWs0hR19",
         "Content-Type": "application/x-www-form-urlencoded"
     }
  
     params = {"message": "Your RobotVacuum detected someone fainted at" + time + ", please confirm his/her safety as soon as possible! "}
- 
+    files = {"imageFile": open(picurl, "rb")}
     r = requests.post("https://notify-api.line.me/api/notify",
-                      headers=headers, params=params)
+                      headers=headers, params=params, files=files)
     print(r.status_code)  #200
 
 a = time.time()

@@ -6,6 +6,7 @@ from Line_notify import Warning
 import requests
 import sys
 
+counter = 0
 class PoseDetector:
     """
     Estimates Pose points of a human body using the mediapipe library.
@@ -46,7 +47,8 @@ class PoseDetector:
         MM = int(daysec / 60) % 60
         SS = int(daysec % 60)
         now = f"{HH}:{MM}:{SS}"
-        Warning(0,now)
+        img = "/home/pi/RobotVacuum/photos/image{}.jpeg".format(counter) 
+        Warning(0,now,img)
     
     def faint_detect(self, img, draw=True, bboxWithHands=False):
 
@@ -94,7 +96,6 @@ class PoseDetector:
         else:
             return 0
 def run():
-    counter = 0
     
     path = "/home/pi/RobotVacuum/photos"
     
@@ -127,26 +128,5 @@ def run():
 def main():
     run()
 
-"""
-def main():
-    path = "/home/pi/RobotVacuum/photos"
-    while True:
-        pictures = os.listdir(path)
-        IMAGE = cv2.imread(path + "/" + pictures[-1])
-        img = IMAGE
-        detector = PoseDetector()
-        img = detector.faint_detect(img, bboxWithHands=False)
-        while True:
-            cv2.imshow("Image", img)
-            time.sleep(5)
-            os.remove(path + "/" + pictures[0])
-            break
-        print(1)    
-        if cv2.waitKey(1) == 27:
-            break
-        
-    return 0
-       
-"""
 if __name__ == "__main__":
     main()
