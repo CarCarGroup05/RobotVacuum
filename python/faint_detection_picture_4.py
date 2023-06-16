@@ -1,12 +1,12 @@
 import cv2
 import mediapipe as mp
-import math
 import os
 import time
 from Line_notify import Warning
 import requests
-import urllib
+import sys
 
+counter = 0
 class PoseDetector:
     """
     Estimates Pose points of a human body using the mediapipe library.
@@ -36,7 +36,7 @@ class PoseDetector:
         self.t = 0
 
     def warning(self):
-        #get time
+        # get time
         url = "http://time.artjoey.com/js/basetime.php"
         res = requests.get(url)
         data = res.content.decode('ascii')
@@ -47,7 +47,8 @@ class PoseDetector:
         MM = int(daysec / 60) % 60
         SS = int(daysec % 60)
         now = f"{HH}:{MM}:{SS}"
-        Warning(0,now)
+        img = "/home/pi/RobotVacuum/python/image{}.jpeg".format(counter) 
+        Warning(0,now,img)
     
     def faint_detect(self, img, draw=True, bboxWithHands=False):
 
@@ -72,18 +73,18 @@ class PoseDetector:
             L_test = [shoulder_L_y - hip_L_y, hip_L_y - knee_L_y, knee_L_y - heel_L_y]
             R_test = [shoulder_R_y - hip_R_y, hip_R_y - knee_R_y, knee_R_y - heel_R_y]
             
-            Ltmp = 0
+            Ltmp = 0 # left hand side test
             for i in L_test:
                 if abs(i) < 50:
                     Ltmp += 1
-                    print("???????????")
+                    print("!!!!!!!!!!") 
                     if Ltmp >= 2:
-                        self.warning()
-            Rtmp = 0
+                        self.warning() # if any two sets of the y-difference oftwo key points, text messages to line group
+            Rtmp = 0 # right hand side test
             for i in R_test:
                 if abs(i) < 50:
                     Rtmp += 1
-                    print("???????????")
+                    print("!!!!!!!!!!")
                     if Rtmp >= 2:
                         self.warning()
                     
@@ -94,25 +95,30 @@ class PoseDetector:
             return img
         else:
             return 0
-def run(camer_id: int, width: int, width: int, height: int) -> None:
-    path = "/home/pi/RobotVacuum/photos"
+def run():
+    
+   #  path = "/home/pi/RobotVacuum/photos"
+    
     # Start capturing video input from the camera
-    cap = cv2.VideoCapture(camera_id)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+    cap = cv2.VideoCapture(0)
+    
     while cap.isOpened():
+        success, image = cap.read()
         if not success:
            sys.exit('ERROR: Unable to read from webcam. Please verify your webcam settings.')
+        image_name = "/home/pi/RobotVacuum/python/image{}.jpeg".format(counter) 
+        cv2.imwrite(image_name, image)
 
-        pictures = os.listdir(path)
-        IMAGE = cv2.imread(path + "/" + pictures[-1])
-        img = IMAGE
+        # pictures = os.listdir(path)
+        img = cv2.imread(image_name)
         detector = PoseDetector()
         img = detector.faint_detect(img, bboxWithHands=False)
         while True:
             cv2.imshow("Image", img)
-            time.sleep(5)
+            cv2.waitKey(5000)
+            cv2.destroyAllWindows()
             os.remove(path + "/" + pictures[0])
+            counter += 1
             break
         print("success!")
         if cv2.waitKey(1) == 27:
@@ -121,32 +127,7 @@ def run(camer_id: int, width: int, width: int, height: int) -> None:
     cv2.destroyAllWindows()
 
 def main():
-    parser.add_argument('--cameraId', help='Id of camera.', required=False, default=0)
-    parser.add_argument('--frameWidth', help='Width of frame to capture from camera.', required=False, default=800)
-    parser.add_argument('--frameHeight', help='Height of frame to capture from camera.', required=False, default=600)
-    args = parser.parse_args()
-    run(int(args.cameraId), args.frameWidth, args.frameHeight)
+    run()
 
-"""
-def main():
-    path = "/home/pi/RobotVacuum/photos"
-    while True:
-        pictures = os.listdir(path)
-        IMAGE = cv2.imread(path + "/" + pictures[-1])
-        img = IMAGE
-        detector = PoseDetector()
-        img = detector.faint_detect(img, bboxWithHands=False)
-        while True:
-            cv2.imshow("Image", img)
-            time.sleep(5)
-            os.remove(path + "/" + pictures[0])
-            break
-        print(1)    
-        if cv2.waitKey(1) == 27:
-            break
-        
-    return 0
-       
-"""
 if __name__ == "__main__":
     main()
