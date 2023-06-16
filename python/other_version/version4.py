@@ -5,9 +5,7 @@ import time
 from Line_notify import Warning
 import requests
 import sys
-import sys
 
-counter = 0
 counter = 0
 class PoseDetector:
     """
@@ -38,7 +36,6 @@ class PoseDetector:
         self.t = 0
 
     def warning(self):
-        # get time
         # get time
         url = "http://time.artjoey.com/js/basetime.php"
         res = requests.get(url)
@@ -77,11 +74,10 @@ class PoseDetector:
             R_test = [shoulder_R_y - hip_R_y, hip_R_y - knee_R_y, knee_R_y - heel_R_y]
             
             Ltmp = 0 # left hand side test
-            Ltmp = 0 # left hand side test
+
             for i in L_test:
                 if abs(i) < 50:
                     Ltmp += 1
-                    print("!!!!!!!!!!") 
                     print("!!!!!!!!!!") 
                     if Ltmp >= 2:
                         self.warning() # if any two sets of the y-difference oftwo key points, text messages to line group
@@ -89,7 +85,6 @@ class PoseDetector:
             for i in R_test:
                 if abs(i) < 50:
                     Rtmp += 1
-                    print("!!!!!!!!!!")
                     print("!!!!!!!!!!")
                     if Rtmp >= 2:
                         self.warning()
@@ -108,10 +103,8 @@ def run():
     # Start capturing video input from the camera
     cap = cv2.VideoCapture(0)
     
-    cap = cv2.VideoCapture(0)
-    
+
     while cap.isOpened():
-        success, image = cap.read()
         success, image = cap.read()
         if not success:
            sys.exit('ERROR: Unable to read from webcam. Please verify your webcam settings.')
@@ -128,7 +121,6 @@ def run():
             cv2.destroyAllWindows()
             os.remove(path + "/" + pictures[0])
             counter += 1
-            counter += 1
             break
         print("success!")
         if cv2.waitKey(1) == 27:
@@ -137,8 +129,6 @@ def run():
     cv2.destroyAllWindows()
 
 def main():
-    run()
-
     run()
 
 if __name__ == "__main__":
