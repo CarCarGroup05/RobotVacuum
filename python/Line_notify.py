@@ -8,10 +8,11 @@ def Warning(self,time,picurl):
  
     params = {"message": "Your RobotVacuum detected someone fainted at" + time + ", please confirm his/her safety as soon as possible! "}
     files = {"imageFile": open(picurl, "rb")}
-    
-    r = requests.post("https://notify-api.line.me/api/notify",
-                      headers=headers, params=params, files=files)
-    print(r.status_code)  #200
+    s = requests.post("https://notify-api.line.me/api/notify", headers=headers, params=params)
+    print(s.status_code)
+    r = requests.post("https://notify-api.line.me/api/notify", headers=headers, params="picture:", files=files)
+   # print(r.status_code)  #200
+    return 0
 """
 a = time.time()
 url = "http://time.artjoey.com/js/basetime.php"
