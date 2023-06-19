@@ -1,22 +1,30 @@
 #ifndef movingControl.h
 #define movingControl.h
+#include "delayHolder.h"
 
 extern int _Tp;
 
 void MotorWriting(double vL, double vR) {
-  // TB6612
-  analogWrite(MotorL_PWML, vL);
+  analogWrite(MotorL_PWML, vL + 30);
   analogWrite(MotorR_PWMR, vR);
 }
+
+void MotorAhead(int L, int R){
+  digitalWrite(MotorR_I1, 1);
+  digitalWrite(MotorR_I2, 0);
+  digitalWrite(MotorL_I3, 1);
+  digitalWrite(MotorL_I4, 0);
+  MotorWriting(L, R); 
+}// MotorInverter
 
 // Handle negative motor_PWMR value.
 void MotorInverter() {
   digitalWrite(MotorR_I1, 0);
   digitalWrite(MotorR_I2, 1);
-  digitalWrite(MotorL_I3, 1);
-  digitalWrite(MotorL_I4, 0);
+  digitalWrite(MotorL_I3, 0);
+  digitalWrite(MotorL_I4, 1);
   MotorWriting(_Tp, _Tp); 
-}// MotorInverter
+}
 
 void MotorMove(){ // go straight
   digitalWrite(MotorR_I1, 1);
@@ -26,22 +34,44 @@ void MotorMove(){ // go straight
   MotorWriting(_Tp, _Tp); 
 }
 
-void backTurn(){ // back turn
-  delay(60);
+void MotorStop(){
+  digitalWrite(MotorR_I1, 0);
+  digitalWrite(MotorR_I2, 0);
+  digitalWrite(MotorL_I3, 0);
+  digitalWrite(MotorL_I4, 0);
+  MotorWriting(_Tp, _Tp); 
+}
+
+void rightAvoidance(){
   MotorInverter();
-  delay(600);
+  holdDelay(400);
+  MotorAhead(0, _Tp);
+  holdDelay(980);
   MotorMove();
 }
 
-void lrTurn(int n){ // left trun 
-  delay(150);
-  MotorWriting(_Tp * (1 - ((n+1)%2)*2) / 6.5, _Tp * (1-((n)%2)*2) / 6.5);
-  delay(680);
+void leftAvoidance(){
+  MotorInverter();
+  holdDelay(400);
+  MotorAhead(_Tp, 0);
+  holdDelay(980);
   MotorMove();
 }
 
-void MotorTunuing(int dist[]){
-  MotorWriting(_Tp, _Tp);
+void motorNext(int state){
+  BT.write(state);
+  BT.write("\n");
+  switch(state){
+    case 0:
+      break;
+    case 1:
+      leftAvoidance();
+      break;
+    case 2:
+      rightAvoidance();
+      break;
+    default:
+      break;
+  }
 }
-
 #endif
