@@ -1,13 +1,13 @@
 import cv2
 import mediapipe as mp
 import os
-import time
-from Line_notify import Warning
 import requests
 import sys
 import argparse
 import gc
-counter = 0
+from Line_notify import Warning
+
+counter = 0 # the index of images 
 
 class PoseDetector:
     """
@@ -48,10 +48,10 @@ class PoseDetector:
         MM = int(daysec / 60) % 60
         SS = int(daysec % 60)
         now = f"{HH}:{MM}:{SS}"
-        img = "image{}.jpeg".format(counter) 
+        img = "image{}.png".format(counter) 
         Warning(0,now,img)
     
-    def faint_detect(self, img, draw=True, bboxWithHands=False):
+    def faint_detect(self, img, draw=True):
 
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.pose.process(imgRGB)
@@ -81,6 +81,7 @@ class PoseDetector:
                     print("HELP!") 
                     if Ltmp == 2:
                         self.warning() # if any two sets of the y-difference oftwo key points, text messages to line group
+            # if LHS is Okay, then analysize the RHS
             if Ltmp < 2:
                 Rtmp = 0 # right hand side test
                 for i in R_test:
@@ -97,10 +98,10 @@ class PoseDetector:
             return img
         else:
             return 0
+        
+# capture images with cv2
 def run(camera_id: int):
-    
     global counter
-   # path = "/home/pi/RobotVacuum/photos"
     
     # Start capturing video input from the camera
     cap = cv2.VideoCapture(camera_id)
@@ -109,34 +110,41 @@ def run(camera_id: int):
         success, image = cap.read()
         if not success:
            sys.exit('ERROR: Unable to read from webcam. Please verify your webcam settings.')
-        image_name = "/home/pi/RobotVacuum/python/image{}.jpeg".format(counter) 
-        cv2.imwrite(image_name, image)
-
-        img = cv2.imread(image_name)
-        detector = PoseDetector()
-        img = detector.faint_detect(img, bboxWithHands=False)
+        
+        # the path where you want to store images after capturing with the cam
+        image_name = "/home/pi/RobotVacuum/python/image{}.png".format(counter) 
+        cv2.imwrite(image_name, image)     # store images with designated format
+        img = cv2.imread(image_name)       # read image files and type(img) == <class 'numpy.ndarray'>
+        detector = PoseDetector()          # the class for detecting whether a person fainted away
+        img = detector.faint_detect(img)
         
         while True:
-            cv2.imshow("Image", img)
-            cv2.waitKey(5000)
-            cv2.destroyAllWindows()
-            os.remove("/home/pi/RobotVacuum/python/image{}.jpeg".format(counter))
-            gc.collect()
-            counter += 1
-            if counter > 39:
+            cv2.imshow("Image", img)      # show the image capturing by the camera
+            cv2.waitKey(5000)             # wait for 5 sec
+            cv2.destroyAllWindows()       # destroy the scene showed on the monitor
+            os.remove("/home/pi/RobotVacuum/python/image{}.png".format(counter)) # remove the image 
+            gc.collect()                  # release grabage
+            counter += 1                  # record the number of pictures the cam have captured
+            
+            # I haven't solved the problem yet:
+            # somehow the execution will kill on its own after capturing 40 pictures
+            if counter > 39: 
                 counter = 0
             break
+        
         print("\n")
-        if cv2.waitKey(1) == 27:
+        
+        if cv2.waitKey(1) == 27: # press esc to stop execution
             break
-    cap.release()
+        
+    cap.release() # release the cap 
     cv2.destroyAllWindows()
 
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--cameraId', help='Id of camera.', required=False, default=-1)
+    parser = argparse.ArgumentParser(formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--cameraId', help = 'Id of camera.', required = False, default = 0) # slect the cam
     args = parser.parse_args()
-    run(int(args.cameraId))
+    run(int(args.cameraId)) # start capturing images
 
 if __name__ == "__main__":
     main()
