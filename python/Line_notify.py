@@ -1,18 +1,34 @@
 import requests
 import time
+import serial
+
 def Warning(self,time,picurl):
-    headers = {
+    headers = {                     
         "Authorization": "Bearer " + "OWbgpbxq30zMuNAzDoaf9HeSiTP0t3hEodgeWs0hR19",
        # "Content-Type": "application/x-www-form-urlencoded"
     }
- 
+    
+    Buzzer() # bee~ bee~ bee~
+    
     params = {"message": "Your RobotVacuum detected someone fainted at" + time + ", please confirm his/her safety as soon as possible! "}
     files = {"imageFile": open(picurl, "rb")}
     s = requests.post("https://notify-api.line.me/api/notify", headers=headers, params=params)
     print(s.status_code)
     r = requests.post("https://notify-api.line.me/api/notify", headers=headers, params="picture:", files=files)
-   # print(r.status_code)  #200
+    print(r.status_code)  #200
     return 0
+
+# use rpi to send message to arduino with USB line and the buzzer will bee when someone faints
+def Buzzer():
+    ser = serial.Serial('/dev/ttyUSB0', 9600, timeout = 1.0) # ttyUSB0 is the port showing in the tool of Arduino IDE
+    time.sleep(3)
+    ser.reset_input_buffer()
+    # print("Serial OK")
+    ser.write("H\n".encode('utf-8')) # send "H" to Arduino
+    if KeyboardInterrupt:
+        ser.close()
+        
+# test the code without rpi but with your laptop
 """
 a = time.time()
 url = "http://time.artjoey.com/js/basetime.php"
