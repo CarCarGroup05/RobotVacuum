@@ -26,7 +26,6 @@ def lineNotify(token, msg, picurl):
 # use rpi to send message to arduino with USB line and the buzzer will bee when someone faints
 def Buzzer():
     ser = serial.Serial('/dev/ttyUSB0', 9600, timeout = 1.0) # ttyUSB0 is the port showing in the tool of Arduino IDE
-    time.sleep(3)
     ser.reset_input_buffer()
     # print("Serial OK")
     ser.write("H\n".encode('utf-8')) # send "H" to Arduino
