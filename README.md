@@ -1,15 +1,14 @@
 # RobotVacuum
 ## Our Idea
-Because of this aging society, we intended to devise a **robot vacuum** to care for senior citizens. It has the ability to not only converse with the elderly but also detect whether they  fall over or not when it cleans the floor simultaneously. 
-#### We record our weekly report on [notion](https://www.notion.so/111-2-81aa25be1b2141e993ead2071728de6c)
+Because of this aging society, we intended to devise a **robot vacuum** to care for senior citizens. It has the ability to not only converse with the elderly but also detect whether they  fall over or not when it cleans the floor simultaneously. We record our weekly report on [notion](https://www.notion.so/111-2-81aa25be1b2141e993ead2071728de6c)
 
 ## Hardware 
 * Arduino Mega 2560 
 * Raspberry Pi 4 with Pi cam
 
 ## Software
-* C++ for Arduino 
-* Python for Rpi
+* C++ for Arduino in the dir called arduino
+* Python for Rpi in the dir called python
 
 ## Appearance of Robot Vacuum
 <picture>
